@@ -22,9 +22,9 @@
 
 import os
 import sys
-import SQL_queries
-import ControllerInfo_UI
-import Friends
+from . import SQL_queries
+from . import ControllerInfo_UI
+from . import Friends
 import datetime
 
 try:

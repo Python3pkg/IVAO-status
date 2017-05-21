@@ -20,7 +20,7 @@
 
 """Importing Python's native modules"""
 import os
-import ConfigParser
+import configparser
 import sqlite3
 
 """Importing the libraries from modules directory"""
@@ -226,7 +226,7 @@ def GMapsLayer(vid, icao_orig, icao_dest):
 def all2map():
     """This function is for see the whole map, all player in GoogleMaps, I implemented this before show up webeye,
        now with webeye, I want to use it here, to make strong those 2 tools"""
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Config.cfg')
     config.read(config_file)
     database = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../database', config.get('Database', 'db'))

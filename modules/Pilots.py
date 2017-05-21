@@ -22,11 +22,11 @@
 
 import os
 import sys
-import SQL_queries
-import PilotInfo_UI
-import StatusFlight
-import Friends
-import distance
+from . import SQL_queries
+from . import PilotInfo_UI
+from . import StatusFlight
+from . import Friends
+from . import distance
 import datetime
 
 try:

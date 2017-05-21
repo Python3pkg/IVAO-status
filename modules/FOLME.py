@@ -22,9 +22,9 @@
 
 import os
 import sys
-import SQL_queries
-import FOLME_UI
-import Friends
+from . import SQL_queries
+from . import FOLME_UI
+from . import Friends
 
 try:
     """Check if PyQt4 is installed or not, this library is a dependency of all,

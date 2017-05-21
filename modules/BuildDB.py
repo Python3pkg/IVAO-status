@@ -21,10 +21,10 @@
 # BuildUI Class
 
 import os
-import ConfigParser
+import configparser
 import sqlite3
 import sys
-import Build_UI
+from . import Build_UI
 
 try:
     """Check if PyQt4 is installed or not, this library is a dependency of all,
@@ -60,7 +60,7 @@ class Build_datafiles(QMainWindow):
            is most useful in managing data files, so there are more opportunities to perform actions on them better."""
         self.show()
         qApp.processEvents()
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Config.cfg')
         config.read(config_file)
         database = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../database', config.get('Database', 'db'))

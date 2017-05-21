@@ -19,12 +19,12 @@
 # IVAO-status :: License GPLv3+
 
 import os
-import ConfigParser
+import configparser
 import sqlite3
 
 def sql_query(args=None, var=None):
     """At this function should be to set all SQL queries to database, missing some ones yet but here is the major"""
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Config.cfg')
     config.read(config_file)
     database = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../database', config.get('Database', 'db'))
@@ -152,7 +152,7 @@ def sql_query(args=None, var=None):
 def update_db(pilots, controllers, vehicles):
     """This function insert the data got it in memory downloaded from IVAO to parse the players for controllers,
        pilots, and FMC to insert into database, separate by field ':' as NOTAM and Logistic explain what field means"""
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Config.cfg')
     config.read(config_file)
     database = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../database', config.get('Database', 'db'))

@@ -21,10 +21,10 @@
 # Schedule Function
 
 import os
-import SQL_queries
-import ConfigParser
-import urllib2
-import StringIO
+from . import SQL_queries
+import configparser
+import urllib.request, urllib.error, urllib.parse
+import io
 import calendar
 import datetime
 import locale
@@ -34,22 +34,22 @@ from PyQt4.QtGui import qApp
 try:
     # This options to can load LXML module for Linux x86 or x64 arch
     if os.uname()[-1] == 'i686':
-        from x86 import etree
+        from .x86 import etree
     else:
-        from x64 import etree
+        from .x64 import etree
 except:
     # This options to can load LXML module for Windows 32bits with
     # Python and PyQt devel enviroment
     if os.environ["PROCESSOR_ARCHITECTURE"] == 'x86':
-        from windows import etree
+        from .windows import etree
     else:
-        print '\nThis software not run here yet.\n'
+        print('\nThis software not run here yet.\n')
 
 def Scheduling():
     """This part is a parse HTML from Schedule website from IVAO, because i can't access
        directly to IVAO database to download schedule, so I have to get by other way where users can
        see the schedule for controllers and pilots"""
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Config.cfg')
     config.read(config_file)
     SQL_queries.sql_query('Clear_Scheduling_tables')
@@ -63,17 +63,17 @@ def Scheduling():
         user = config.get('Settings', 'user')
         pswd = config.get('Settings', 'pass')
         if use_proxy == 2 and auth == 2:
-            passmgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+            passmgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
             passmgr.add_password(None, 'http://' + host + ':' + port, user, pswd)
-            authinfo = urllib2.ProxyBasicAuthHandler(passmgr)
-            proxy_support = urllib2.ProxyHandler({"http" : "http://" + host + ':' + port})
-            opener = urllib2.build_opener(proxy_support, authinfo)
-            urllib2.install_opener(opener)
+            authinfo = urllib.request.ProxyBasicAuthHandler(passmgr)
+            proxy_support = urllib.request.ProxyHandler({"http" : "http://" + host + ':' + port})
+            opener = urllib.request.build_opener(proxy_support, authinfo)
+            urllib.request.install_opener(opener)
             QNetworkProxy.setApplicationProxy(QNetworkProxy(QNetworkProxy.HttpProxy, str(host), int(port), str(user), str(pswd)))
         if use_proxy == 2 and auth == 0:
-            proxy_support = urllib2.ProxyHandler({"http" : "http://" + host + ':' + port})
-            opener = urllib2.build_opener(proxy_support)
-            urllib2.install_opener(opener)
+            proxy_support = urllib.request.ProxyHandler({"http" : "http://" + host + ':' + port})
+            opener = urllib.request.build_opener(proxy_support)
+            urllib.request.install_opener(opener)
             QNetworkProxy.setApplicationProxy(QNetworkProxy(QNetworkProxy.HttpProxy, str(host), int(port)))
         if use_proxy == 0 and auth == 0:
             pass
@@ -82,8 +82,8 @@ def Scheduling():
         save_locale = locale.getlocale()
         locale.setlocale(locale.LC_ALL, 'C')
 
-        SchedATC_URL = urllib2.urlopen(config.get('Info', 'scheduling_atc')).read()
-        tree = etree.parse(StringIO.StringIO(SchedATC_URL), parser)
+        SchedATC_URL = urllib.request.urlopen(config.get('Info', 'scheduling_atc')).read()
+        tree = etree.parse(io.StringIO(SchedATC_URL), parser)
         table_atc = tree.xpath("/html/body/div/center/table")[0]
         actual_today = datetime.datetime.today()
 
@@ -94,8 +94,8 @@ def Scheduling():
                     SQL_queries.sql_query('Add_Schedule_ATC', columns)
                     qApp.processEvents()
 
-        SchedFlights_URL = urllib2.urlopen(config.get('Info', 'scheduling_flights')).read()
-        tree = etree.parse(StringIO.StringIO(SchedFlights_URL), parser)
+        SchedFlights_URL = urllib.request.urlopen(config.get('Info', 'scheduling_flights')).read()
+        tree = etree.parse(io.StringIO(SchedFlights_URL), parser)
         table_flights = tree.xpath("/html/body/div/div/center/table")[0]
 
         for line_flights_table in table_flights[2:]:

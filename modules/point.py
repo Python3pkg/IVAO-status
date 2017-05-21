@@ -1,6 +1,6 @@
 import re
 from itertools import islice
-import util, units, format
+from . import util, units, format
 
 class Point(object):
     """
@@ -86,7 +86,7 @@ class Point(object):
                 pass
             elif isinstance(arg, Point):
                 return cls.from_point(arg)
-            elif isinstance(arg, basestring):
+            elif isinstance(arg, str):
                 return cls.from_string(arg)
             else:
                 try:
@@ -144,7 +144,7 @@ class Point(object):
         if altitude is None:
             altitude = bool(self.altitude)
         if altitude:
-            if not isinstance(altitude, basestring):
+            if not isinstance(altitude, str):
                 altitude = 'km'
             coordinates.append(self.format_altitude(altitude))
 
@@ -158,7 +158,7 @@ class Point(object):
         if altitude is None:
             altitude = bool(self.altitude)
         if altitude:
-            if not isinstance(altitude, basestring):
+            if not isinstance(altitude, str):
                 altitude = 'km'
             coordinates.append(self.format_altitude(altitude))
 

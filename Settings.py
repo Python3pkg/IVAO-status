@@ -21,7 +21,7 @@
 # Setting Class
 
 import os
-import ConfigParser
+import configparser
 import sys
 from modules import SettingWindow_UI
 
@@ -54,7 +54,7 @@ class Settings(QMainWindow):
         image_icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images', 'ivao_status_splash.png')
         self.setWindowIcon(QIcon(image_icon))
         self.connect(self.ui.SettingAccepButton, SIGNAL('clicked()'), self.options)
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Config.cfg')
         config.read(config_file)
         self.ui.spinBox.setValue(config.getint('Time_Update', 'time') / 60000)
@@ -95,7 +95,7 @@ class Settings(QMainWindow):
     def options(self):
         minutes = self.ui.spinBox.value()
         time_update = minutes * 60000
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Config.cfg')
         config.add_section('Settings')
         config.set('Settings', 'use_proxy', self.ui.Setting_checkBox.checkState())

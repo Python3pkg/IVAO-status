@@ -18,8 +18,8 @@
 #
 # IVAO-status :: License GPLv3+
 
-import SQL_queries
-import distance
+from . import SQL_queries
+from . import distance
 
 def status_flight(callsign):
     """This function is to get the action of the Pilot but for now I try to show using percent and

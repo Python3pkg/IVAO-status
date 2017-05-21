@@ -23,11 +23,11 @@ import sys
 import os
 import sqlite3
 import datetime
-import ConfigParser
-import urllib2
+import configparser
+import urllib.request, urllib.error, urllib.parse
 import random
 import gzip
-import StringIO
+import io
 
 try:
     """Check if PyQt4 is installed or not, this library is a dependency of all,
@@ -222,7 +222,7 @@ class Main(QMainWindow):
                         , "3": "Ground", "4": "Tower", "5": "Approach", "6": "Center", "7":"Departure"}
 
         """If user delete Config.ini by error, when app start write it again the file"""
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Config.cfg')
         if os.path.exists(config_file):
             config.read(config_file)
@@ -335,7 +335,7 @@ class Main(QMainWindow):
         this part contain some proxy settings because at least in my country is very used"""
         self.statusBar().showMessage('Trying connecting to IVAO', 3000)
         qApp.processEvents()
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Config.cfg')
         config.read(config_file)
         try:
@@ -346,27 +346,27 @@ class Main(QMainWindow):
             user = config.get('Settings', 'user')
             pswd = config.get('Settings', 'pass')
             if use_proxy == 2 and auth == 2:
-                passmgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                passmgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
                 passmgr.add_password(None, 'http://' + host + ':' + port, user, pswd)
-                authinfo = urllib2.ProxyBasicAuthHandler(passmgr)
-                proxy_support = urllib2.ProxyHandler({"http" : "http://" + host + ':' + port})
-                opener = urllib2.build_opener(proxy_support, authinfo)
-                urllib2.install_opener(opener)
+                authinfo = urllib.request.ProxyBasicAuthHandler(passmgr)
+                proxy_support = urllib.request.ProxyHandler({"http" : "http://" + host + ':' + port})
+                opener = urllib.request.build_opener(proxy_support, authinfo)
+                urllib.request.install_opener(opener)
                 QNetworkProxy.setApplicationProxy(QNetworkProxy(QNetworkProxy.HttpProxy, str(host), int(port), str(user), str(pswd)))
             if use_proxy == 2 and auth == 0:
-                proxy_support = urllib2.ProxyHandler({"http" : "http://" + host + ':' + port})
-                opener = urllib2.build_opener(proxy_support)
-                urllib2.install_opener(opener)
+                proxy_support = urllib.request.ProxyHandler({"http" : "http://" + host + ':' + port})
+                opener = urllib.request.build_opener(proxy_support)
+                urllib.request.install_opener(opener)
                 QNetworkProxy.setApplicationProxy(QNetworkProxy(QNetworkProxy.HttpProxy, str(host), int(port)))
             if use_proxy == 0 and auth == 0:
                 pass
 
             """Doing Load balance to IVAO as Logistics required"""
-            StatusURL = urllib2.urlopen(config.get('Info', 'data_access'))
+            StatusURL = urllib.request.urlopen(config.get('Info', 'data_access'))
             shuffle = random.choice([link for link in StatusURL.readlines() if 'gzurl0' in link]).split('=')[1].strip('\r\n')
-            zfilename = urllib2.urlopen(shuffle)
+            zfilename = urllib.request.urlopen(shuffle)
             content = zfilename.read()
-            logged_users = gzip.GzipFile(fileobj=StringIO.StringIO(content))
+            logged_users = gzip.GzipFile(fileobj=io.StringIO(content))
             qApp.processEvents()
 
             self.statusBar().showMessage('Downloading info from IVAO', 2000)
@@ -393,7 +393,7 @@ class Main(QMainWindow):
 
     def show_tables(self):
         """Here show all data into PILOT and CONTROLLER full list"""
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Config.cfg')
         config.read(config_file)
         ImageFlags = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'flags')
@@ -979,7 +979,7 @@ class Main(QMainWindow):
 
     def search_button(self):
         """Here can search by VID, Callsign or Player Name in MainTab"""
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Config.cfg')
         config.read(config_file)
         database = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database', config.get('Database', 'db'))
@@ -1033,7 +1033,7 @@ class Main(QMainWindow):
 
     def action_click(self, event=None):
         """This section is for right-click mouse, and get in what table was clicked to do some action"""
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Config.cfg')
         config.read(config_file)
         database = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database', config.get('Database', 'db'))
@@ -1168,7 +1168,7 @@ class Main(QMainWindow):
         self.ui.ATCtableWidget.setCurrentCell(-1, -1)
         self.ui.SearchtableWidget.setCurrentCell(-1, -1)
         self.ui.FriendstableWidget.setCurrentCell(-1, -1)
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Config.cfg')
         config.read(config_file)
         database = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database', config.get('Database', 'db'))
@@ -1229,7 +1229,7 @@ class Main(QMainWindow):
         """This functions is for get the METAR balance as Logistics mail required"""
         self.statusBar().showMessage('Downloading METAR', 2000)
         qApp.processEvents()
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Config.cfg')
         config.read(config_file)
         icao_airport = self.ui.METAREdit.text()
@@ -1242,23 +1242,23 @@ class Main(QMainWindow):
             user = config.get('Settings', 'user')
             pswd = config.get('Settings', 'pass')
             if use_proxy == 2 and auth == 2:
-                passmgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                passmgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
                 passmgr.add_password(None, 'http://' + host + ':' + port, user, pswd)
-                authinfo = urllib2.ProxyBasicAuthHandler(passmgr)
-                proxy_support = urllib2.ProxyHandler({"http" : "http://" + host + ':' + port})
-                opener = urllib2.build_opener(proxy_support, authinfo)
-                urllib2.install_opener(opener)
+                authinfo = urllib.request.ProxyBasicAuthHandler(passmgr)
+                proxy_support = urllib.request.ProxyHandler({"http" : "http://" + host + ':' + port})
+                opener = urllib.request.build_opener(proxy_support, authinfo)
+                urllib.request.install_opener(opener)
                 QNetworkProxy.setApplicationProxy(QNetworkProxy(QNetworkProxy.HttpProxy, str(host), int(port), str(user), str(pswd)))
             if use_proxy == 2 and auth == 0:
-                proxy_support = urllib2.ProxyHandler({"http" : "http://" + host + ':' + port})
-                opener = urllib2.build_opener(proxy_support)
-                urllib2.install_opener(opener)
+                proxy_support = urllib.request.ProxyHandler({"http" : "http://" + host + ':' + port})
+                opener = urllib.request.build_opener(proxy_support)
+                urllib.request.install_opener(opener)
                 QNetworkProxy.setApplicationProxy(QNetworkProxy(QNetworkProxy.HttpProxy, str(host), int(port)))
             if use_proxy == 0 and auth == 0:
                 pass
-            StatusURL = urllib2.urlopen(config.get('Info', 'data_access'))
+            StatusURL = urllib.request.urlopen(config.get('Info', 'data_access'))
             shuffle = random.choice([link for link in StatusURL.readlines() if 'metar0' in link]).split('=')[1].strip('\r\n')
-            METAR = urllib2.urlopen(shuffle + '?id=%s' % icao_airport)
+            METAR = urllib.request.urlopen(shuffle + '?id=%s' % icao_airport)
 
             if self.ui.METARtableWidget.rowCount() == 0:
                 self.ui.METARtableWidget.insertRow(self.ui.METARtableWidget.rowCount())
@@ -1351,7 +1351,7 @@ class Main(QMainWindow):
 
     def statistics(self):
         """This function is for Statistics Tab in the MainWindow, when select option at combobox appears result"""
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Config.cfg')
         config.read(config_file)
         database = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database', config.get('Database', 'db'))
@@ -1879,7 +1879,7 @@ class Main(QMainWindow):
                 else:
                     list_server[server] = total_items[0]
 
-            for item in list_server.keys():
+            for item in list(list_server.keys()):
                 self.ui.Statistics.insertRow(self.ui.Statistics.rowCount())
                 col_item = QTableWidgetItem(str('%s' % (str(item),)), 0)
                 self.ui.Statistics.setItem(startrow, 1, col_item)
@@ -1897,7 +1897,7 @@ class Main(QMainWindow):
 
     def network(self):
         """This function is to see NetworkTab statistics"""
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Config.cfg')
         config.read(config_file)
         database = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database', config.get('Database', 'db'))

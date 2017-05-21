@@ -172,7 +172,7 @@ def _build_path_iterator(path):
         raise SyntaxError("cannot use absolute path on element")
     stream = iter(xpath_tokenizer(path))
     try:
-        _next = stream.next
+        _next = stream.__next__
     except AttributeError:
         # Python 3
         def _next():
@@ -210,7 +210,7 @@ def find(elem, path):
     it = iterfind(elem, path)
     try:
         try:
-            _next = it.next
+            _next = it.__next__
         except AttributeError:
             return next(it)
         else:

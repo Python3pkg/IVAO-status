@@ -22,7 +22,7 @@
 
 import os
 import sys
-import ConfigParser
+import configparser
 import sqlite3
 
 try:
@@ -41,7 +41,7 @@ except:
 class Friends():
     """The Class AddFriend is to add/remove the friend in roster at MainTab of MainWindow"""
     def add(self, vid2add):
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../Config.cfg')
         config.read(config_file)
         database = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../database', config.get('Database', 'db'))
